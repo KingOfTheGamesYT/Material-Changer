@@ -1,84 +1,73 @@
 package de.lellson.materialchanger;
 
-import net.minecraftforge.common.config.Configuration;
 
+import com.google.common.collect.Lists;
+import net.minecraftforge.common.ForgeConfigSpec;
+
+import java.util.List;
+
+@SuppressWarnings({"WeakerAccess", "SameParameterValue"})
 public class ChangerConfig {
-	
-	public static final String GENERAL = "general";
-	public static final String CHANGER = "changer";
-	
-	public final MaterialChanger materialChanger;
 
-	public ChangerConfig(MaterialChanger materialChanger) {
-		this.materialChanger = materialChanger;
+	private static final ForgeConfigSpec.Builder BUILDER = new ForgeConfigSpec.Builder();
+
+
+
+	public static final ForgeConfigSpec.ConfigValue<List<String>> ATTACK_DAMAGE;
+	public static final ForgeConfigSpec.ConfigValue<List<String>> ATTACK_SPEED;
+	public static final ForgeConfigSpec.ConfigValue<List<String>> ARMOR_PROTECTION;
+	public static final ForgeConfigSpec.ConfigValue<List<String>> ARMOR_TOUGHNESS;
+	public static final ForgeConfigSpec.ConfigValue<List<String>> STACK_SIZE;
+	public static final ForgeConfigSpec.ConfigValue<List<String>> DURABILITY;
+	public static final ForgeConfigSpec.ConfigValue<List<String>> EFFICIENCY;
+	public static final ForgeConfigSpec.ConfigValue<List<String>> HARVEST_LEVEL;
+	public static final ForgeConfigSpec.ConfigValue<List<String>> ENCHANTABILITY;
+
+	static {
+
+
+
+		BUILDER.comment("This section allows you to change attributes of items. Each change takes 1 line with the following format:<namespace>:<path>, Be sure to install Attribute Fix if you didn't notice any changes (This usually means you put an attribute higher than vanilla allows) The property you want to change. Allowed properties: ARMOR_PROTECTION, ARMOR_TOUGHNESS, ATTACK_DAMAGE, ATTACK_SPEED, DURABILITY, EFFICIENCY, ENCHANTABILITY, HARVEST_LEVEL, STACKSIZE\n" +
+				" item: The id of the item. This is usually the mod id (or \"minecraft\" for vanilla) followed by a colon followed by the item name. e.g. minecraft:iron_sword\n" +
+				" value: The new value for the property.\n" +
+				" " +
+				" Keep in mind that changing the enchantability or harvest level affects the whole tool material, which means that you technically only need to change it for one tool.\n" +
+				" Unfortunately this also means that changing those attributes for one item also applies the change to every item with the same tool material (example below).\n" +
+				" Also, you can't change the attack speed of swords at the moment. Sorry!");
+
+		BUILDER.push("attribute_item_stats");
+		ATTACK_DAMAGE = ChangerConfig.BUILDER.comment(createDescription("Amount of melee damage dealt when fighting.", 0.0, 2048.0)).define("Attack Damage List", Lists.newArrayList());
+		ATTACK_SPEED = ChangerConfig.BUILDER.comment(createDescription("Speed at which the attack cooldown recharges, higher values make it recharge faster.", 0.0, 1024.0)).define("Attack Speed List", Lists.newArrayList());
+		ARMOR_PROTECTION = ChangerConfig.BUILDER.comment(createDescription("Amount of armor protection.", 0.0, 30.0)).define("Armor List", Lists.newArrayList());
+		ARMOR_TOUGHNESS = ChangerConfig.BUILDER.comment(createDescription("Amount of armor toughness.", 0.0, 20.0)).define("Armor Toughness List", Lists.newArrayList());
+		STACK_SIZE = ChangerConfig.BUILDER.comment(createDescription("Specify max stack size for any item.", 0.0, 64.0, "Must not have durability")).define("Stack Size List", Lists.newArrayList());
+		DURABILITY = ChangerConfig.BUILDER.comment(createDescription("Change durability for any damageable item.\nSetting to 0 will make the item unbreakable.", "Must have durability")).define("Durability List", Lists.newArrayList());
+		EFFICIENCY = ChangerConfig.BUILDER.comment(createDescription("Change dig speed value for any item.\nSetting to 0 will prevent the item from mining anything.")).define("Dig Speed List", Lists.newArrayList());
+		HARVEST_LEVEL = ChangerConfig.BUILDER.comment(createDescription("Change harvest level value for any tool item.\nSetting to -1 will remove any harvest level present.", "Must be a tool")).define("Harvest Level List", Lists.newArrayList());
+		ENCHANTABILITY = ChangerConfig.BUILDER.comment(createDescription("Change enchantability value for any enchantable item.\nSetting to 0 will make enchanting this item impossible.", "Must be enchantable")).define("Enchantability List", Lists.newArrayList());
+		BUILDER.pop();
 	}
 
-	public String[] load() {
-		
-		materialChanger.config.addCustomCategoryComment(GENERAL, "General settings");
-		materialChanger.config.addCustomCategoryComment(CHANGER, "This section allows you to change attributes of items. Each \"change\" takes 1 line with the following format:\n" +
-												 "property;item;value\n\n" + 
-				  								 "property: The property you want to change. Allowed properties: ARMOR_PROTECTION, ARMOR_TOUGHNESS, ATTACK_DAMAGE, ATTACK_SPEED, DURABILITY, EFFICIENCY, ENCHANTABILITY, HARVEST_LEVEL, STACKSIZE\n" +
-												 "item: The id of the item. This is usually the mod id (or \"minecraft\" for vanilla) followed by a colon followed by the item name. e.g. minecraft:iron_sword\n" +
-				  								 "value: The new value for the property.\n\n" +
-												 "Keep in mind that changing the enchantability or harvest level affects the whole tool material, which means that you technically only need to change it for one tool.\n" +
-				  								 "Unfortunately this also means that changing those attributes for one item also applies the change to every item with the same tool material (example below).\n" +
-												 "Also, you can't change the attack speed of swords at the moment. Sorry!\n\n" +
-				  								 "Examples:\n\n" + 
-												 "ATTACK_DAMAGE;minecraft:iron_axe;12\n" +
-				  								 "(Increases the attack damage of every iron axe to 12)\n\n" + 
-												 "DURABILITY;minecraft:diamond_sword;500\n" +
-												 "DURABILITY;minecraft:diamond_pickaxe;500\n" +
-												 "DURABILITY;minecraft:diamond_axe;500\n" +
-												 "DURABILITY;minecraft:diamond_shovel;500\n" +
-												 "DURABILITY;minecraft:diamond_hoe;500\n" +
-												 "(Decreases the durability of every vanilla diamond tool to 500)\n\n" +
-												 "DURABILITY;minecraft:flint_and_steel;-1\n" +
-												 "(Makes flint and steel unbreakable)\n\n" +
-												 "STACKSIZE;minecraft:snowball;64\n" +
-												 "(Increases the stacksize of snowballs to 64)\n\n" +
-												 "HARVEST_LEVEL;minecraft:diamond_pickaxe;0\n" +
-												 "(Decreases the harvest level of diamond pickaxes to 0. They can't even mine iron ore now)\n\n" +
-												 "ARMOR_PROTECTION;minecraft:leather_helmet;3\n" +
-												 "ARMOR_PROTECTION;minecraft:leather_chestplate;8\n" +
-												 "ARMOR_PROTECTION;minecraft:leather_leggings;6\n" +
-												 "ARMOR_PROTECTION;minecraft:leather_boots;3\n" +
-												 "ARMOR_TOUGHNESS;minecraft:leather_helmet;2\n" +
-												 "ARMOR_TOUGHNESS;minecraft:leather_chestplate;2\n" +
-												 "ARMOR_TOUGHNESS;minecraft:leather_leggings;2\n" +
-												 "ARMOR_TOUGHNESS;minecraft:leather_boots;2\n" +
-												 "(Makes leather armor as protective as diamond armor)\n\n" +
-												 "ARMOR_PROTECTION;minecraft:golden_helmet;2\n" +
-												 "ARMOR_PROTECTION;minecraft:golden_chestplate;6\n" +
-												 "ARMOR_PROTECTION;minecraft:golden_leggings;5\n" +
-												 "ARMOR_PROTECTION;minecraft:golden_boots;2\n" +
-												 "ARMOR_TOUGHNESS;minecraft:golden_helmet;3\n" +
-												 "ARMOR_TOUGHNESS;minecraft:golden_chestplate;3\n" +
-												 "ARMOR_TOUGHNESS;minecraft:golden_leggings;3\n" +
-												 "ARMOR_TOUGHNESS;minecraft:golden_boots;3\n" +
-												 "ATTACK_DAMAGE;minecraft:golden_sword;6.5\n" +
-												 "ATTACK_DAMAGE;minecraft:golden_pickaxe;4.5\n" +
-												 "ATTACK_DAMAGE;minecraft:golden_axe;9\n" +
-												 "ATTACK_DAMAGE;minecraft:golden_shovel;5\n" +
-												 "ATTACK_SPEED;minecraft:golden_axe;0.95\n" +
-												 "ATTACK_SPEED;minecraft:golden_hoe;3.5\n" +
-												 "DURABILITY;minecraft:golden_helmet;212\n" +
-												 "DURABILITY;minecraft:golden_chestplate;308\n" +
-												 "DURABILITY;minecraft:golden_leggings;289\n" +
-												 "DURABILITY;minecraft:golden_boots;250\n" +
-												 "DURABILITY;minecraft:golden_sword;420\n" +
-												 "DURABILITY;minecraft:golden_pickaxe;420\n" +
-												 "DURABILITY;minecraft:golden_axe;420\n" +
-												 "DURABILITY;minecraft:golden_shovel;420\n" +
-												 "DURABILITY;minecraft:golden_hoe;420\n" +
-												 "EFFICIENCY;minecraft:golden_pickaxe;7\n" +
-												 "EFFICIENCY;minecraft:golden_axe;7\n" +
-												 "EFFICIENCY;minecraft:golden_shovel;7\n" +
-												 "HARVEST_LEVEL;minecraft:golden_pickaxe;2\n" +
-												 "ENCHANTABILITY;minecraft:golden_pickaxe;16\n" +
-												 "ENCHANTABILITY;minecraft:golden_helmet;19\n" +
-												 "(Better Gold: Changes golden tools, swords and armor properties completley. As you can see, I only changed the enchantability for one tool and one armor item since it affects the whole gold material)");
-		
-		return materialChanger.config.getStringList("changer", CHANGER, new String[]{}, "");
+	public static final ForgeConfigSpec SPEC = BUILDER.build();
+
+	private static String createDescription(String text) {
+
+		return createDescription(text, 0.0, Integer.MAX_VALUE);
 	}
+
+	private static String createDescription(String text, String condition) {
+
+		return createDescription(text, 0.0, Integer.MAX_VALUE, condition);
+	}
+
+	private static String createDescription(String text, double min, double max) {
+
+		return text + "\nActual Range: " + min + " ~ " + max;
+	}
+
+	private static String createDescription(String text, double min, double max, String condition) {
+
+		return createDescription(text, min, max) + "\nCondition: " + condition;
+	}
+
 }
