@@ -27,8 +27,8 @@ public class ChangerConfig {
 
 
 
-		BUILDER.comment("This section allows you to change attributes of items. Each change takes 1 line with the following format:<namespace>:<path>, Be sure to install Attribute Fix if you didn't notice any changes (This usually means you put an attribute higher than vanilla allows) The property you want to change. Allowed properties: ARMOR_PROTECTION, ARMOR_TOUGHNESS, ATTACK_DAMAGE, ATTACK_SPEED, DURABILITY, EFFICIENCY, ENCHANTABILITY, HARVEST_LEVEL, STACKSIZE\n" +
-				" item: The id of the item. This is usually the mod id (or \"minecraft\" for vanilla) followed by a colon followed by the item name. e.g. minecraft:iron_sword\n" +
+		BUILDER.comment("This section allows you to change attributes of items. Each change takes 1 line with the following format:<namespace>:<path>, Value Be sure to install Attribute Fix if you didn't notice any changes (This usually means you put an attribute higher than vanilla allows) Allowed properties: ARMOR_PROTECTION, ARMOR_TOUGHNESS, ATTACK_DAMAGE, ATTACK_SPEED, DURABILITY, EFFICIENCY, ENCHANTABILITY, HARVEST_LEVEL, STACKSIZE\n" +
+				" namespace: The name of the item. This is usually the mod id (or \"minecraft\" for vanilla) followed by a colon followed by the item name. e.g. minecraft:iron_sword\n" +
 				" value: The new value for the property.\n" +
 				" " +
 				" Keep in mind that changing the enchantability or harvest level affects the whole tool material, which means that you technically only need to change it for one tool.\n" +
